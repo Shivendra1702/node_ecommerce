@@ -1,0 +1,32 @@
+{
+  "name": "ecommerce",
+  "version": "1.0.0",
+  "description": "ecomm app ---\r              |\r              |           \r              |--->{models}->|------> (User)\r              |              |        -name\r              |              |        -email\r              |              |        -password\r              |              |        -photo {id,secure Url}\r              |              |        -role\r              |              |        -createdAt\r              |              |        -resetPasswordToken\r              |              |        -resetPasswordExpiry\r              |              |\r              |              |\r              |              |--------------------------------->(order)\r              |              |                                  -shippingInfo{}\r              |              |----->(Product)                   -User\r              |                    -name                        -paymentInfo{}\r              |                    -price                       -taxInfo\r              |                    -description                 -ShippingAmount\r              |                    -photos[]                    -OrderStatus\r              |                    -category                    -DeliveredAt\r              |                    -brand                       -CreatedAt\r              |                    -stock                       -orderItems = [{name,quantity,image,price,product}]                \r              |                    -ratings\r              |                    -NumOfReviews\r              |                    -reviews{user,name,rating,comment}\r              |                    -user\r              |                    -createdAt\r              |\r              |\r              |\r              |\r              |\r              |--->{utils}---->-getJwtToken\r              |                -comparepassword\r              |                -pre hook \r              |                -getResetPasswordToken\r              |\r              |\r              |\r              |",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "author": "Shivendra Pratap",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cloudinary": "^1.40.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-fileupload": "^1.4.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^7.5.0",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.4",
+    "razorpay": "^2.9.2",
+    "stripe": "^13.4.0",
+    "validator": "^13.11.0"
+  }
+}
