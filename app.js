@@ -7,17 +7,32 @@ const app = express();
 
 //import routes
 const homeRouter = require("./routes/homeRoute");
+const userRouter = require("./routes/userRoute");
+
+//temp test
+app.set("view engine", "ejs");
 
 //regular middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
-app.use(fileUpload());
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: "/tmp/",
+  })
+);
 
 //morgan middleware
 app.use(morgan("tiny"));
 
 //Router middleware
 app.use("/api/v1", homeRouter);
+app.use("/api/v1", userRouter);
+
+// temp test
+app.get("/signuptest", (req, res) => {
+  res.render("signuptest");
+});
 
 module.exports = app;
