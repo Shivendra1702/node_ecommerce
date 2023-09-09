@@ -13,14 +13,14 @@ const userSchema = new mongoose.Schema({
 
   email: {
     type: String,
-    require: [true, "Please Provide Email !!"],
+    required: [true, "Please Provide Email !!"],
     validate: [validator.isEmail, "Please Enter Email in Correct Format !!"],
     unique: true,
   },
 
   password: {
     type: String,
-    require: [true, "Please Provide Password !!"],
+    required: [true, "Please Provide Password !!"],
     minlength: [8, "Password Should Be at Least 8 characters"],
     select: false,
   },
@@ -57,15 +57,19 @@ const userSchema = new mongoose.Schema({
 
 //encrypt password before save -HOOK ..
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next();
+  try {
+    if (!this.isModified("password")) {
+      return next();
+    }
+    this.password = await bcrypt.hash(this.password, 10);
+  } catch (error) {
+    return next(error);
   }
-  this.password = await bcrypt.hash(this.password, 10);
 });
 
 //validate the password
-userSchema.methods.isValidPassword = async function (useSendPassword) {
-  return await bcrypt.compare(useSendPassword, this.password);
+userSchema.methods.isValidPassword = async function (userSendPassword) {
+  return await bcrypt.compare(userSendPassword, this.password);
 };
 
 //create and return jwt token
@@ -76,7 +80,7 @@ userSchema.methods.getJwtToken = function () {
 };
 
 //generate , save to db and return forgotPassword Token
-userSchema.methods.getForgotPasswordToken = async function () {
+userSchema.methods.getForgotPasswordToken = function () {
   const forgotToken = crypto.randomBytes(20).toString("hex");
   this.forgotPasswordToken = forgotToken;
   this.forgotPasswordExpiry = Date.now() + 5 * 60 * 1000;
