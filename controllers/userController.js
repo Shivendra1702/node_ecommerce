@@ -225,10 +225,254 @@ const passwordReset = async function (req, res, next) {
   }
 };
 
+const getUserDetails = async function (req, res, next) {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: `User Not Found !`,
+      });
+    }
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error in Getting User Details : ${error}`,
+    });
+  }
+};
+
+const changePassword = async function (req, res, next) {
+  try {
+    const userId = req.user._id;
+
+    const user = await User.findById(userId).select("+password");
+
+    if (!(req.body.oldpassword && req.body.newpassword)) {
+      return res.status(400).json({
+        success: false,
+        message: `Please Enter All The Fields !`,
+      });
+    }
+
+    const isCorrectOldPassword = await user.isValidPassword(
+      req.body.oldpassword
+    );
+
+    if (!isCorrectOldPassword) {
+      return res.status(400).json({
+        success: false,
+        message: `Old Password Is Incorrect !`,
+      });
+    }
+
+    user.password = req.body.newpassword;
+    await user.save({ validateBeforeSave: false });
+
+    const token = user.getJwtToken();
+
+    const options = {
+      expires: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+    };
+    user.password = undefined;
+    res.status(200).cookie("token", token, options).json({
+      success: true,
+      token,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error in Changing Password : ${error}`,
+    });
+  }
+};
+
+const updateUserDetails = async function (req, res, next) {
+  try {
+    const userId = req.user._id;
+
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        message: `Fields Empty !`,
+      });
+    }
+
+    let newData = {};
+
+    req.body.name && (newData.name = req.body.name);
+
+    req.body.email && (newData.email = req.body.email);
+
+    if (req.files) {
+      const user = await User.findById(userId);
+      const photoId = user.photo.id;
+
+      await cloudinary.uploader.destroy(photoId);
+
+      let newPhoto = req.files.photo;
+      const result = await cloudinary.uploader.upload(newPhoto.tempFilePath, {
+        folder: "users",
+        width: 150,
+        crop: "scale",
+      });
+
+      newData.photo = {
+        id: result.public_id,
+        secure_url: result.secure_url,
+      };
+    }
+
+    const user = await User.findByIdAndUpdate(userId, newData, {
+      new: true,
+      runValidators: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      user,
+      message: `User Details Updated Successfully !`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: `Error in Updating User Details : ${error}`,
+    });
+  }
+};
+
+const adminAllUsers = async function (req, res, next) {
+  try {
+    const users = await User.find();
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error getting all users : ${error}`,
+    });
+  }
+};
+
+const adminGetSingleuser = async function (req, res, next) {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    return res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error getting user : ${error}`,
+    });
+  }
+};
+
+const adminUpdateUser = async function (req, res, next) {
+  try {
+    const userId = req.params.id;
+
+    if (!req.body) {
+      return res.status(400).json({
+        success: false,
+        message: `Fields Empty !`,
+      });
+    }
+
+    let newData = {};
+
+    req.body.name && (newData.name = req.body.name);
+
+    req.body.email && (newData.email = req.body.email);
+
+    req.body.role && (newData.role = req.body.role);
+
+    const user = await User.findByIdAndUpdate(userId, newData, {
+      new: true,
+      runValidators: true,
+    });
+
+    return res.status(200).json({
+      success: true,
+      user,
+      message: `User Details Updated Successfully !`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error updating user : ${error}`,
+    });
+  }
+};
+
+const adminDeleteUser = async function (req, res, next) {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        message: `User Not Found !`,
+      });
+    }
+
+    const photoId = user.photo.id;
+
+    await cloudinary.uploader.destroy(photoId);
+
+    await User.findByIdAndDelete(userId);
+
+    return res.status(200).json({
+      success: true,
+      message: `User Deleted Successfully !!`,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error deleting user : ${error}`,
+    });
+  }
+};
+
+const managerAllUsers = async function (req, res, next) {
+  try {
+    const users = await User.find({ role: "user" });
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: `Error getting all users : ${error}`,
+    });
+  }
+};
+
 module.exports = {
   signUp,
   signIn,
   logOut,
   forgotPassword,
   passwordReset,
+  getUserDetails,
+  changePassword,
+  updateUserDetails,
+  adminAllUsers,
+  adminGetSingleuser,
+  adminUpdateUser,
+  adminDeleteUser,
+  managerAllUsers,
 };

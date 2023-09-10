@@ -25,4 +25,24 @@ const isLoggedIn = async (req, res, next) => {
   next();
 };
 
-module.exports = isLoggedIn;
+const customRole = (...role) => {
+  return (req, res, next) => {
+    try {
+      if (!role.includes(req.user.role)) {
+        return res
+          .status(401)
+          .json({ error: "You do not have permission to perform this action" });
+      }
+      next();
+    } catch (error) {
+      return res
+        .status(401)
+        .json({ error: "error from customRole middleware" });
+    }
+  };
+};
+
+module.exports = {
+  isLoggedIn,
+  customRole,
+};
