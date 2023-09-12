@@ -8,6 +8,7 @@ const app = express();
 //import routes
 const homeRouter = require("./routes/homeRoute");
 const userRouter = require("./routes/userRoute");
+const productRouter = require("./routes/productRoute");
 
 //temp test
 app.set("view engine", "ejs");
@@ -29,6 +30,7 @@ app.use(morgan("tiny"));
 //Router middleware
 app.use("/api/v1", homeRouter);
 app.use("/api/v1", userRouter);
+app.use("/api/v1", productRouter);
 
 // temp test
 app.get("/signuptest", (req, res) => {

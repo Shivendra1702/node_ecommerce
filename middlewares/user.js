@@ -19,7 +19,9 @@ const isLoggedIn = async (req, res, next) => {
 
     req.user = user;
   } catch (error) {
-    return res.status(401).json({ error: "error from isLoggedIn middleware" });
+    return res.status(401).json({ 
+       error: `Error from isLoggedIn middleware: ${error}`
+     });
   }
 
   next();
