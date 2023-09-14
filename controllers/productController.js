@@ -56,7 +56,7 @@ const getProducts = async function (req, res, next) {
       .filter();
 
     let products = await productsObj.base;
-
+    8;
     const filteredProductsCount = products.length;
     // const filteredProductsCount=products.length;
 
@@ -78,7 +78,19 @@ const getProducts = async function (req, res, next) {
   }
 };
 
+const adminGetAllProducts = async function (req, res, next) {
+  try {
+  } catch (error) {}
+};
+
+const getProduct = async function (req, res, next) {
+  try {
+  } catch (error) {}
+};
+
 module.exports = {
   addProduct,
   getProducts,
+  adminGetAllProducts,
+  getProduct,
 };
