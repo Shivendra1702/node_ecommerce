@@ -2,12 +2,24 @@ const express = require("express");
 const router = express.Router();
 const { isLoggedIn, customRole } = require("../middlewares/user");
 
-const { addProduct, getProducts,getProduct,adminGetAllProducts } = require("../controllers/productController");
+const {
+  addProduct,
+  getProducts,
+  getProduct,
+  addReview,
+  deleteReview,
+  adminGetAllProducts,
+  adminUpdateSingleProduct,
+  adminDeleteSingleProduct,
+} = require("../controllers/productController");
 
 //user routes
 router.route("/products").get(getProducts);
 router.route("/product/:id").get(getProduct);
-
+router
+  .route("/product/review/:id")
+  .put(isLoggedIn, addReview)
+  .delete(isLoggedIn, deleteReview);
 
 //admin routes
 router
@@ -16,6 +28,11 @@ router
 
 router
   .route("/admin/products")
-  .post(isLoggedIn, customRole("admin"), adminGetAllProducts);  
+  .get(isLoggedIn, customRole("admin"), adminGetAllProducts);
+
+router
+  .route("/admin/product/:id")
+  .put(isLoggedIn, customRole("admin"), adminUpdateSingleProduct)
+  .delete(isLoggedIn, customRole("admin"), adminDeleteSingleProduct);
 
 module.exports = router;
