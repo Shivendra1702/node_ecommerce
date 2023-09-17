@@ -1,7 +1,7 @@
-const home = (req,res) => {
+const home = (req, res) => {
   res.status(200).json({
     success: true,
-    greeting: "Hello From Api",
+    greeting: "Hello From API",
   });
 };
 
