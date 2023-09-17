@@ -9,6 +9,8 @@ const app = express();
 const homeRouter = require("./routes/homeRoute");
 const userRouter = require("./routes/userRoute");
 const productRouter = require("./routes/productRoute");
+const paymentRouter = require("./routes/paymentRoute");
+const orderRouter = require("./routes/orderRoute");
 
 //temp test
 app.set("view engine", "ejs");
@@ -31,6 +33,8 @@ app.use(morgan("tiny"));
 app.use("/api/v1", homeRouter);
 app.use("/api/v1", userRouter);
 app.use("/api/v1", productRouter);
+app.use("/api/v1", paymentRouter);
+app.use("/api/v1", orderRouter);
 
 // temp test
 app.get("/signuptest", (req, res) => {

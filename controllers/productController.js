@@ -33,6 +33,9 @@ const addProduct = async function (req, res, next) {
 
     const product = await Product.create(req.body);
 
+    product.stock = product.stock + 1;
+    await product.save({ validateBeforeSave: false });
+
     return res.status(200).json({
       success: true,
       message: "Product added successfully",

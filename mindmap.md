@@ -32,10 +32,10 @@ ecomm app ---
              |
              |
              |
-             |--->{utils}---->-getJwtToken
-             |                -comparepassword
-             |                -pre hook 
-             |                -getResetPasswordToken
+             |--->{utils}---->-email/service
+             |                -WhereClause
+             |                 
+             |                
              |
              |
              |

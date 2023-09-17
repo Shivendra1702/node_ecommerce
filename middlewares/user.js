@@ -28,6 +28,7 @@ const isLoggedIn = async (req, res, next) => {
 };
 
 const customRole = (...role) => {
+  // console.log(role);
   return (req, res, next) => {
     try {
       if (!role.includes(req.user.role)) {
